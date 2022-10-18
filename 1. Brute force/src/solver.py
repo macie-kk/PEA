@@ -34,14 +34,16 @@ def solve_tsp(matrix: list[list]):
 
         path_value = 0
         path_len = len(path)
-        for i in range(path_len):
+        for i in range(path_len-1):
             # (0, 1, 2, 3, 4, 5)
             current_point = path[i]
-            next_point = path[0] if i == path_len - 1 else path[i + 1]
+            next_point = path[i + 1]
             path_value += matrix[current_point][next_point]
 
             if path_value >= shortest['value']:
                 break
+
+        path_value += matrix[path[path_len-1]][path[0]]
 
         if path_value < shortest['value']:
             shortest['value'] = path_value
