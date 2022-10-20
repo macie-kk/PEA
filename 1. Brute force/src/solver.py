@@ -35,7 +35,7 @@ def solve_tsp(stop_1m: bool, matrix: list[list]):
             last_30_itps.append(iterations)
 
             # utrzymywanie max 30 wartosci w tablicy
-            if len(last_30_itps) == 30:
+            if len(last_30_itps) == 60:
                 last_30_itps.pop()
 
             its_per_second = int(sum(last_30_itps) / len(last_30_itps))
