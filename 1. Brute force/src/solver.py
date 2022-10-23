@@ -3,7 +3,7 @@ import math
 import time
 
 
-def solve_tsp(stop_1m: bool, matrix: list[list]):
+def solve_tsp(stop_1m: bool, matrix: list):
     # generowanie permutacji dla macierzy NxN # [(0, 1, 2), (0, 2, 1), ...]
     paths = itertools.permutations(range(len(matrix[0])))
 

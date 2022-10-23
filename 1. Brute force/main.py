@@ -27,6 +27,10 @@ def main():
     output['repeats'] = repeats
     output['times'] = times
 
+    print('\nWartosc optymalna: ', output['solution'])
+    print('Sciezka optymalna: ', output['path'])
+    print('Czasy: ', output['times'])
+
     # zapisywanie wynikow
     logger.log(output)
     print('\n[OK] Done')

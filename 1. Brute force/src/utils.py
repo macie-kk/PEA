@@ -33,7 +33,7 @@ def read_matrix(filepath: str):
 
 
 # wypisywanie macierzy
-def print_matrix(matrix: list[list]):
+def print_matrix(matrix: list):
     for row in matrix:
         for val in row:
             print(val + ' ', end='')
