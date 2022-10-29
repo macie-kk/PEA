@@ -40,4 +40,4 @@ if __name__ == '__main__':
     try:
         main()
     except Exception as e:
-        input('\n[!] Error:', e, end='\n\n')
+        input(f'\n[!] Error:{e}\n\n')
