@@ -57,7 +57,8 @@ def run_test(config: dict):
     
     print('[✓]' if path_match else '[✗]', end=' ')
     print(f'Sciezka: {result["path"]}', end='\n' if path_match else f' -- Poprawne: {path}\n')
-    pass
+    
+    print(f'--> Czas: {result["time"]} [s]')
 
 def run_solve():
     pass

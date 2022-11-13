@@ -1,80 +1,79 @@
 import itertools
+import time
+from tracemalloc import start
 
 
 def solve_tsp(matrix: list):
-    cost = {}
-    S = list(range(1, len(matrix)))
-    P = {}
+    MATRIX_SIZE = len(matrix)
+    VERTICES = list(range(1, MATRIX_SIZE))   # lista wierzcholkow z pomienieciem zerowego
+    PRE = {}    # obiekt przechowujacy informacje o poprzedzajacych wierzcholkach (do odtwarzania sciezki) 
+    COST = {}   # obiekt przechowujacy koszty przejscia -- { (xi, S): V } -- gdzie V to koszt przejscia z wierzcholka xi do 0-wego przechodzac przez wszystkie wierzcholki w zbiorze S dokladnie raz
 
-    for k in S:
-        cost[(k, (k,))] = matrix[0][k]
+    start_time = time.time_ns()
 
-    for k in range(2, len(S) + 1):
-        subsets = itertools.combinations(S, k)
+    # wczytanie pojedynczych kosztow przejscia (z kazdego wierzcholka do 0-wego)
+    for k in VERTICES:
+        COST[(k, (k,))] = matrix[0][k]
 
+    # obliczenie pozostalych kosztow przejsc
+    for k in range(2, MATRIX_SIZE):
+        subsets = itertools.combinations(VERTICES, k)   # wszystkie kombinacje zbiorow wierzcholkow o danej dlugosci k -- [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4), ...]
+
+        # dla kazdego zbioru ze zbiorow kombinacji
         for set in subsets:
+            # dla kazdego wierzcholka w zbiorze
             for xi in set:
-                new_set = tuple(x for x in set if x != xi)
+                new_set = tuple(x for x in set if x != xi)  # utworzenie nowego zbioru bez obecnie sprawdzanego wierzcholka
 
-                costs = []
-                min_cost = float('inf')
-                min_pre_v = None    # wierzcholek poprzedzajacy minimalny koszt
-                min_pre_s = None    # sciezka poprzedzajaca minimalny koszt
+                min_cost = float('inf') # najmniejszy koszt przejcia
+                min_pre = None          # wierzcholek i sciezka poprzedzajace najmniejszy koszt przejscia
 
+                # dla kazdego wierzcholka w nowym zbiorze
                 for xj in new_set:
-                    costs.append(cost[(xj, new_set)] + matrix[xj][xi])
-                    if costs[-1] < min_cost:
-                        min_cost = costs[-1]
-                        min_pre_v = xj
-                        min_pre_s = (xj, new_set)
+                    cost = COST[(xj, new_set)] + matrix[xj][xi]  # dodanie kosztu przejscia
+
+                    # jezeli koszt przejscia jest mniejszy niz obecnie zapisany to zapisz poprzedzajacy wierzcholek
+                    if cost < min_cost:
+                        min_cost = cost
+                        min_pre = (xj, new_set)
                         
-                
-                # print(f'cost({xi}, {set}) = min({costs}) = {min_cost} [{min_pre}]')
-                cost[(xi, set)] = min_cost
-                P[(xi, set)] = {'v': min_pre_v, 's': min_pre_s} # zapisanie informacji o poprzedzajacym wierzcholku i sciezce
+                COST[(xi, set)] = min_cost  # zapisanie kosztu przejscia z wierzcholka 'xi' do 0-wego przez wszystkie punktu ze zbioru 'set'
+                PRE[(xi, set)] = min_pre    # zapisanie informacji o poprzedzajacym wierzcholku 'xj' i sciezce 'S\{xi}'
 
-    for c in cost:
-        if len(c[1]) == len(S):
-            cost[c] += matrix[c[0]][0]
-        # print(c, ':', cost[c], '::', P.get(c))
-
-    solution, path = backtracking(cost, P, S)
-
-    # print('----------------')
-    # print('Wynik:', solution)
-    # print('Sciezka:', path)
+    solution, path = backtrack(matrix, COST, PRE, VERTICES)
+    
+    stop_time = time.time_ns()
+    work_time = round((stop_time - start_time) * 10**(-9), 6)
 
     return {
-        'time': None,
+        'time': work_time,
         'solution': solution,
         'path': tuple(path)
     }
 
-def backtracking(cost: dict, P: dict, S: list):
-    cost_keys = list(cost)              # lista kluczy kosztow -- (xi, S)
-    max_len_sets = cost_keys[-len(S):]  # lista najdluzszych zestawow
+def backtrack(matrix: list, COST: dict, PRE: dict, VERTICES: list):
+    cost_keys = list(COST.keys())
+    max_cost_keys = cost_keys[-len(VERTICES):]   # lista najdluzszych zestawow
 
     solution = float('inf')
-    last_pre_v = None       # ostatni wierzcholek poprzedzajacy
-    last_pre_s = None       # ostatnia sciezka poprzedzajaca
+    pre = None
+    
+    # znalezienie rozwiazania z najwiekszych zbiorow wraz z poprzedzajacym je wierzcholkiem
+    for key in max_cost_keys:
+        cost = COST[key] + matrix[key[0]][0]
+        if cost < solution:
+            solution = cost
+            pre = key
 
-    # znalezienie rozwiazania z najwiekszych zbiorow oraz poprzedzajacego je wierzcholka i sciezki
-    for key in max_len_sets:
-        if cost[key] < solution:
-            solution = cost[key]
-            last_pre_v = key[0]
-            last_pre_s = key
+    path = [0, pre[0]]
 
-    path = [0, last_pre_v]
-
-    # backtracking po zapisanych poprzedzajacych wierzcholkach i sciezkach
+    # backtracking po zapisanych poprzedzajacych wierzcholkach
     cost_keys.reverse()
-    current_set = last_pre_s
-    while True:
-        if len(current_set[1]) == 1:
-            break
-        path.append(P[current_set]['v'])
-        current_set = P[current_set]['s']
+
+    current_set = pre
+    while len(current_set[1]) != 1:
+        path.append(PRE[current_set][0])
+        current_set = PRE[current_set]
     path.append(0)
 
     return solution, path
