@@ -43,13 +43,14 @@ def solve_tsp(matrix: list):
     solution, path = backtrack(matrix, COST, PRE, VERTICES)
     
     stop_time = time.time_ns()
-    work_time = round((stop_time - start_time) * 10**(-9), 6)
+    work_time = round((stop_time - start_time) * 10**(-9), 2)
 
     return {
         'time': work_time,
         'solution': solution,
         'path': tuple(path)
     }
+
 
 def backtrack(matrix: list, COST: dict, PRE: dict, VERTICES: list):
     cost_keys = list(COST.keys())
@@ -69,7 +70,6 @@ def backtrack(matrix: list, COST: dict, PRE: dict, VERTICES: list):
 
     # backtracking po zapisanych poprzedzajacych wierzcholkach
     cost_keys.reverse()
-
     current_set = pre
     while len(current_set[1]) != 1:
         path.append(PRE[current_set][0])

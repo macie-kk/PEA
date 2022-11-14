@@ -1,50 +1,29 @@
-from src.utils import read_matrix, load_config, print_matrix, parse_string_path
+from src.utils import read_matrix, load_config, str_to_tuple
 from src.solver import solve_tsp
 from src.logger import Logger
 from src.constants import INPUT_DIR, OUTPUT_DIR
 
+import sys
 
 def main():
     # ladowanie configu
     config = load_config()
-    testing = bool(config['Test'])
+    testing = config['Test'] == 'True'
 
     if testing:
         run_test(config)
         return
+    
+    output = run_solve(config)
+    save_to_file(config, output)
 
-    repeats = int(config['Repeats'])
-    input_file = config['Input_File']
-
-    # wczytywanie macierzy i inicjalizacja loggera wynikow
-    matrix = read_matrix(f'{INPUT_DIR}/{input_file}')
-
-    # rozwiazywanie problemu n razy
-    output = {}
-    # times = []
-    for _ in range(repeats):
-        output = solve_tsp(matrix)
-        # times.append(str(output['time']).replace('.', ','))
-
-    # dopisanie danych do zapisu
-    # output['test_file'] = input_file
-    # output['repeats'] = repeats
-    # output['times'] = times
-
-    # print('\nWartosc optymalna: ', output['solution'])
-    # print('Sciezka optymalna: ', output['path'])
-    # print('Czasy: ', output['times'])
-
-    # zapisywanie wynikow
-    # logger = Logger(OUTPUT_DIR, config['Output_File'])
-    # logger.log(output)
-    print('\n[OK] Done')
 
 def run_test(config: dict):
     print('[OK] Testowanie\n')
+
     file = config['Test_File']
     solution = int(config['Test_Solution'])
-    path = parse_string_path(config['Test_Path'])
+    path = str_to_tuple(config['Test_Path'])
 
     matrix = read_matrix(f'{INPUT_DIR}/{file}')
     result = solve_tsp(matrix)
@@ -60,11 +39,46 @@ def run_test(config: dict):
     
     print(f'--> Czas: {result["time"]} [s]')
 
-def run_solve():
-    pass
+
+def run_solve(config: dict):
+    print('[OK] Rozwiazywanie\n')
+
+    repeats = int(config['Repeats'])
+    input_file = config['Input_File']
+
+    matrix = read_matrix(f'{INPUT_DIR}/{config["Input_File"]}')
+
+    output = {}
+    times = []
+    for i in range(repeats):
+        print(f'[{i+1}/{repeats}]      ', end='\r')
+        output = solve_tsp(matrix)
+        times.append(str(output['time']).replace('.', ','))
+
+    # dopisanie danych do zapisu
+    output['input_file'] = input_file
+    output['repeats'] = repeats
+    output['times'] = times
+
+    print('Wartosc optymalna: ', output['solution'])
+    print('Sciezka optymalna: ', output['path'])
+    print('Czasy: ', output['times'])
+
+    return output
+
+
+def save_to_file(config: dict, output: dict):
+    logger = Logger(OUTPUT_DIR, config['Output_File'])
+    logger.log(output)
+
 
 if __name__ == '__main__':
-    # try:
-    main()
-    # except Exception as e:
-    #     input(f'\n[!] Error:{e}\n\n')
+    if '--debug' in sys.argv:
+        main()
+        sys.exit('\n[OK] Done')
+
+    try:
+        main()
+        sys.exit('\n[OK] Done')
+    except Exception as e:
+        input(f'\n[!] Error: {e}\n')

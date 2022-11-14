@@ -7,6 +7,7 @@ class Logger:
         self.output_dir = out_dir
         self.output_path = f'{out_dir}/{file_name}'
 
+
     def log(self, output):
         # tworzenie folderu wyjsciowego
         if not os.path.exists(self.output_dir):
@@ -19,4 +20,4 @@ class Logger:
 
         # zapisywanie danych do pliku rozdzielonych tabulatorem -- czasy rozdzielone srednikiem
         with open(self.output_path, 'a+') as f:
-            f.write(f'{output["test_file"]}\t{output["repeats"]}\t{output["solution"]}\t{output["path"]}\t{";".join(output["times"])}\n')
+            f.write(f'{output["input_file"]}\t{output["repeats"]}\t{output["solution"]}\t{output["path"]}\t{";".join(output["times"])}\n')

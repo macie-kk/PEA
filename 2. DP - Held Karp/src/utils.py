@@ -18,7 +18,7 @@ def load_config():
 
 
 # parsowanie stringa ze sciezka "(1, 2, 3, 4)" na obiekt tuple
-def parse_string_path(string):
+def str_to_tuple(string):
     tuple_ex = Exception(f'Podana wartosc "{string}" nie jest poprawnym tuplem')
     try:
         s = eval(string)
