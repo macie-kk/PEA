@@ -1,6 +1,6 @@
 import itertools
 import time
-import gc
+
 
 def solve_tsp(matrix: list):
     MATRIX_SIZE = len(matrix)
@@ -16,6 +16,7 @@ def solve_tsp(matrix: list):
 
     # obliczenie pozostalych kosztow przejsc
     for k in range(2, MATRIX_SIZE):
+        print(f'[{k}/{MATRIX_SIZE-1}]    ', end='\r')
         subsets = itertools.combinations(VERTICES, k)   # wszystkie kombinacje zbiorow wierzcholkow o danej dlugosci k -- [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4), ...]
 
         # dla kazdego zbioru ze zbiorow kombinacji
@@ -39,11 +40,8 @@ def solve_tsp(matrix: list):
                 COST[(xi, set)] = min_cost  # zapisanie kosztu przejscia z wierzcholka 'xi' do 0-wego przez wszystkie punktu ze zbioru 'set'
                 PRE[(xi, set)] = min_pre    # zapisanie informacji o poprzedzajacym wierzcholku 'xj' i sciezce 'S\{xi}'
                 
-                del new_set   
-                del min_pre     
-
-        if k-2 % 5 == 0:
-            gc.collect()
+                del new_set
+            del set
 
     solution, path = backtrack(matrix, COST, PRE, VERTICES)
     

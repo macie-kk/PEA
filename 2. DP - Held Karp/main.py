@@ -5,6 +5,7 @@ from src.constants import INPUT_DIR, OUTPUT_DIR
 
 import sys
 
+
 def main():
     # ladowanie configu
     config = load_config()
