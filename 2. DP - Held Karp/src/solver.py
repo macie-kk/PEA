@@ -1,7 +1,6 @@
 import itertools
 import time
-from tracemalloc import start
-
+import gc
 
 def solve_tsp(matrix: list):
     MATRIX_SIZE = len(matrix)
@@ -36,9 +35,15 @@ def solve_tsp(matrix: list):
                     if cost < min_cost:
                         min_cost = cost
                         min_pre = (xj, new_set)
-                        
+
                 COST[(xi, set)] = min_cost  # zapisanie kosztu przejscia z wierzcholka 'xi' do 0-wego przez wszystkie punktu ze zbioru 'set'
                 PRE[(xi, set)] = min_pre    # zapisanie informacji o poprzedzajacym wierzcholku 'xj' i sciezce 'S\{xi}'
+                
+                del new_set   
+                del min_pre     
+
+        if k-2 % 5 == 0:
+            gc.collect()
 
     solution, path = backtrack(matrix, COST, PRE, VERTICES)
     

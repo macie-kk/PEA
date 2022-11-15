@@ -1,5 +1,5 @@
 import os
-
+import tsplib95
 
 # ladowanie konfiguracji
 # format: Klucz=Wartosc # komentarz
@@ -31,20 +31,32 @@ def str_to_tuple(string):
 
 # wczytywanie macierzy
 def read_matrix(filepath: str):
-    lines = get_file_lines(filepath)
-    lines = [line for line in lines if len(line.strip().split(' ')) > 1]  # usuwanie pustych linii
+    if filepath.split('.')[-1] == 'txt':
+        lines = get_file_lines(filepath)
+        lines = [line for line in lines if len(line.strip().split(' ')) > 1]  # usuwanie pustych linii
 
-    matrix = [[] for _ in range(len(lines))]  # inicjalizacja macierzy 2D
+        matrix = [[] for _ in range(len(lines))]  # inicjalizacja macierzy 2D
 
-    for i, line in enumerate(lines):
-        values = " ".join(line.split()).split(' ')  # usuwanie zbednych spacji i rozdzial wartosci
+        for i, line in enumerate(lines):
+            values = " ".join(line.split()).split(' ')  # usuwanie zbednych spacji i rozdzial wartosci
 
-        if len(values) == 1 or len(values) == 0:
-            continue
+            if len(values) == 1 or len(values) == 0:
+                continue
 
-        # wpisywanie do macierzy
-        for v in values:
-            matrix[i].append(int(v))
+            # wpisywanie do macierzy
+            for v in values:
+                matrix[i].append(int(v))
+
+        return matrix
+    
+    problem = tsplib95.load(filepath)
+    size_range = range(len(list(problem.get_nodes())))
+
+    matrix = [[] for _ in size_range]  # inicjalizacja macierzy 2D
+
+    for i in size_range:
+        for j in size_range:
+            matrix[i].append(problem.get_weight(i, j))
 
     return matrix
 
