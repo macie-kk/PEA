@@ -5,8 +5,8 @@ import time
 def solve_tsp(matrix: list):
     MATRIX_SIZE = len(matrix)
     VERTICES = list(range(1, MATRIX_SIZE))   # lista wierzcholkow z pomienieciem zerowego
-    PRE = {}    # obiekt przechowujacy informacje o poprzedzajacych wierzcholkach (do odtwarzania sciezki) 
-    COST = {}   # obiekt przechowujacy koszty przejscia -- { (xi, S): V } -- gdzie V to koszt przejscia z wierzcholka xi do 0-wego przechodzac przez wszystkie wierzcholki w zbiorze S dokladnie raz
+    PRE = {}   # obiekt przechowujacy informacje o poprzedzajacych wierzcholkach (do odtwarzania sciezki)
+    COST = {}  # { (xi, S): V } -- gdzie V to koszt przejscia z wierzcholka xi do 0-wego przechodzac przez wszystkie wierzcholki w zbiorze S dokladnie raz
 
     start_time = time.time_ns()
 
@@ -16,8 +16,9 @@ def solve_tsp(matrix: list):
 
     # obliczenie pozostalych kosztow przejsc
     for k in range(2, MATRIX_SIZE):
-        print(f'[{k}/{MATRIX_SIZE-1}]    ', end='\r')
-        subsets = itertools.combinations(VERTICES, k)   # wszystkie kombinacje zbiorow wierzcholkow o danej dlugosci k -- [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4), ...]
+        # print(f'[{k}/{MATRIX_SIZE-1}]    ', end='\r')
+        # wszystkie kombinacje zbiorow wierzcholkow o danej dlugosci k -- [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4), ...]
+        subsets = itertools.combinations(VERTICES, k)
 
         # dla kazdego zbioru ze zbiorow kombinacji
         for set in subsets:
@@ -25,7 +26,7 @@ def solve_tsp(matrix: list):
             for xi in set:
                 new_set = tuple(x for x in set if x != xi)  # utworzenie nowego zbioru bez obecnie sprawdzanego wierzcholka
 
-                min_cost = float('inf') # najmniejszy koszt przejcia
+                min_cost = float('inf')  # najmniejszy koszt przejcia
                 min_pre = None          # wierzcholek i sciezka poprzedzajace najmniejszy koszt przejscia
 
                 # dla kazdego wierzcholka w nowym zbiorze
@@ -39,12 +40,12 @@ def solve_tsp(matrix: list):
 
                 COST[(xi, set)] = min_cost  # zapisanie kosztu przejscia z wierzcholka 'xi' do 0-wego przez wszystkie punktu ze zbioru 'set'
                 PRE[(xi, set)] = min_pre    # zapisanie informacji o poprzedzajacym wierzcholku 'xj' i sciezce 'S\{xi}'
-                
+
                 del new_set
             del set
-
+        
     solution, path = backtrack(matrix, COST, PRE, VERTICES)
-    
+
     stop_time = time.time_ns()
     work_time = round((stop_time - start_time) * 10**(-9), 2)
 
@@ -61,7 +62,7 @@ def backtrack(matrix: list, COST: dict, PRE: dict, VERTICES: list):
 
     solution = float('inf')
     pre = None
-    
+
     # znalezienie rozwiazania z najwiekszych zbiorow wraz z poprzedzajacym je wierzcholkiem
     for key in max_cost_keys:
         cost = COST[key] + matrix[key[0]][0]
