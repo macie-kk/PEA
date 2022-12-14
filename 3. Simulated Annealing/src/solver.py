@@ -2,8 +2,10 @@ import math
 import random
 import time
 
-def solve_tsp(matrix, temperature=1, cooling_rate=0.9, max_iter = 10_000_000):
-    T_MIN = 10**(-24)
+def solve_tsp(matrix, config):
+    temperature, cooling_rate, max_epochs = config['Temperature'], config['Cooling_Rate'], config['Epochs']
+    T_MIN = 0.0001
+    
     start_time = time.time_ns()
 
     current_path = get_random_path(matrix)
@@ -12,9 +14,9 @@ def solve_tsp(matrix, temperature=1, cooling_rate=0.9, max_iter = 10_000_000):
     best_path = current_path
     best_cost = current_cost
 
-    iter = 0
-    while temperature > T_MIN:
-        iter += 1
+    epoch = 0
+    while temperature > T_MIN and epoch < max_epochs:
+        epoch += 1
         new_path = generate_neighbor(current_path)
         new_cost = calc_cost(new_path, matrix)
 
@@ -31,18 +33,17 @@ def solve_tsp(matrix, temperature=1, cooling_rate=0.9, max_iter = 10_000_000):
         # If the new solution is worse than the current solution, accept it with a probability
         # that is proportional to the difference in cost and the current temperature
         else:
-            acceptance_probability = math.exp((current_cost - new_cost) / temperature)
+            acceptance_probability = math.exp(-(new_cost - best_cost) / temperature)
 
             if random.random() < acceptance_probability:
                 current_path = new_path
                 current_cost = new_cost
 
         # Decrease the temperature according to the cooling rate
-        temperature *= cooling_rate
+        temperature *= 1 - cooling_rate
 
     stop_time = time.time_ns()
 
-    print(iter)
     return {
         'time': stop_time - start_time,
         'solution': best_cost,
@@ -86,3 +87,17 @@ def generate_neighbor(path):
     path[index_1], path[index_2] = path[index_2], path[index_1]
 
     return tuple(path)
+
+
+"""
+---- Metody wyboru rozwiązania w sąsiedztwie
+1. Metoda losowego wyboru: losowe wybieranie jednego lub więcej rozwiązań spośród tych, które są dostępne w sąsiedztwie.
+2. Metoda łańcuchowa: wybieranie jednego z dostępnych rozwiązań zgodnie z ustalonym porządkiem.
+3. Metoda najbliższego sąsiada: wybieranie najlepszego rozwiązania spośród dostępnych w sąsiedztwie.
+4. Metoda najlepszego sąsiada: wybieranie najlepszego rozwiązania spośród tych, które są lepsze niż obecnie posiadane.
+5. Metoda wybierania względem wagi: wybieranie rozwiązania o największej wadze spośród dostępnych w sąsiedztwie.
+
+1. Boltzmann - T(k+1) = T(k) * a gdzie a jest współczynnikiem chłodzenia
+2. Cauchy - T(k+1) = T(k) / (1 + a*k) gdzie a jest współczynnikiem chłodzenia, k jest numer kroku.
+
+"""

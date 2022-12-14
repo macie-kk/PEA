@@ -1,4 +1,4 @@
-from src.utils import read_matrix, load_config, str_to_tuple
+from src.utils import read_matrix, load_config, str_to_tuple, round_seconds
 from src.solver import solve_tsp
 from src.logger import Logger
 from src.constants import INPUT_DIR, OUTPUT_DIR
@@ -7,71 +7,58 @@ import sys
 
 
 def main():
-    # ladowanie configu
-    config = load_config()
-    testing = config['Test'] == 'True'
-
-    if testing:
-        run_test(config)
-        return
-    
-    output = run_solve(config)
-    # save_to_file(config, output)
+    cfg = load_config()   
+    output = run_solve(cfg)
+    # save_to_file(cfg, output)
 
 
-def run_test(config: dict):
-    print('[OK] Testowanie\n')
-
-    file = config['Test_File']
-    solution = int(config['Test_Solution'])
-    path = str_to_tuple(config['Test_Path'])
-
-    matrix = read_matrix(f'{INPUT_DIR}/{file}')
-    result = solve_tsp(matrix)
-
-    solution_match = solution == result['solution']
-    path_match = path == result['path'] or path == tuple(reversed(result['path']))
-
-    print('[✓]' if solution_match else '[✗]', end=' ')
-    print(f'Wynik: {result["solution"]}', end='\n' if solution_match else f' -- Poprawne: {solution}\n')
-    
-    print('[✓]' if path_match else '[✗]', end=' ')
-    print(f'Sciezka: {result["path"]}', end='\n' if path_match else f' -- Poprawne: {path}\n')
-    
-    print(f'--> Czas: {result["time"]} [s]')
-
-
-def run_solve(config: dict):
+def run_solve(cfg: dict):
     print('[OK] Rozwiazywanie\n')
 
-    repeats = int(config['Repeats'])
-    input_file = config['Input_File']
-    time_precision = int(config['Precision'])
+    repeats = cfg['Repeats']
+    matrix = read_matrix(f'{INPUT_DIR}/{cfg["Input_File"]}')
 
-    matrix = read_matrix(f'{INPUT_DIR}/{config["Input_File"]}')
-
-    output = {}
-    times = []
+    # zapisywanie wszystkich znalezionych rozwiazan
+    outputs = []
     for i in range(repeats):
-        # print(f'[{i+1}/{repeats}]      ', end='\r')
-        output = solve_tsp(matrix)
-        working_time = round(output['time'] * 10**(-9), time_precision)
-        times.append(str(working_time).replace('.', ','))
+        if i > 1: print(f'[{i+1}/{repeats}]      ', end='\r')
+        outputs.append(solve_tsp(matrix, cfg))
+        
+    # szkielet obiektu wyjsciowego
+    final_output = {
+        'input_file': cfg['Input_File'],
+        'repeats': repeats,
+        'times': [],
+        'solution': float('inf'),
+        'path': (),
+    }
+
+    # znajdowanie najlepszego rozwiazania i sciezki sposrod wszystkich powtorzen
+    for output in outputs:
+        working_time = round_seconds(output['time'], cfg['Precision'])
+        final_output['times'].append(working_time)
+
+        # wybor najlepszego znalezionego rozwiazania
+        solution = output['solution']
+        if solution < final_output['solution']:
+            final_output['solution'] = solution
+            final_output['path'] = output['path']
+
 
     # dopisanie danych do zapisu
-    output['input_file'] = input_file
-    output['repeats'] = repeats
-    output['times'] = times
+    final_output['input_file'] = cfg['Input_File']
+    final_output['repeats'] = repeats
 
-    print('Wartosc optymalna: ', output['solution'])
-    print('Sciezka optymalna: ', output['path'])
-    print('Czasy: ', output['times'])
+    print('Rozwiazanie: ', final_output['solution'])
+    print('Sciezka: ', final_output['path'])
+    print(f'\n--> Dokladnosc: {round(cfg["Solution"]/final_output["solution"] * 100)}%')
+    print(f'--> Czas: {round(sum(final_output["times"]), 2)}s')
 
     return output
 
 
-def save_to_file(config: dict, output: dict):
-    logger = Logger(OUTPUT_DIR, config['Output_File'])
+def save_to_file(cfg: dict, output: dict):
+    logger = Logger(OUTPUT_DIR, cfg['Output_File'])
     logger.log(output)
 
 

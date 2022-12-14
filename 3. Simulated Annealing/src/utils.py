@@ -12,9 +12,31 @@ def load_config():
 
         key_value_split = line.split('=')               # rozdzielenie klucza i wartosci
         comment_split = key_value_split[1].split('#')   # rozdzielenie wartosci i komentarza
-        config[key_value_split[0]] = comment_split[0].strip()
+        config[key_value_split[0]] = parse(comment_split[0].strip())
 
     return config
+
+
+def round_seconds(time_ns: int, precision: int):
+    return round(time_ns * 10**(-9), precision)
+
+
+# parsowanie stringa to odpowiedniego typu danych [bool, int, float, str]
+def parse(value):
+    if value in ['True', 'False']:
+        return value == 'True'
+
+    try:
+        num = int(value)
+        return num
+    except: pass
+
+    try:
+        num = float(value)
+        return num
+    except: pass
+
+    return value
 
 
 # parsowanie stringa ze sciezka "(1, 2, 3, 4)" na obiekt tuple
