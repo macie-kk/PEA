@@ -4,7 +4,7 @@ import time
 
 def solve_tsp(matrix, config):
     temperature, cooling_rate, max_epochs = config['Temperature'], config['Cooling_Rate'], config['Epochs']
-    T_MIN = 0.0001
+    T_MIN = 0.00001
     
     start_time = time.time_ns()
 
@@ -33,14 +33,15 @@ def solve_tsp(matrix, config):
         # If the new solution is worse than the current solution, accept it with a probability
         # that is proportional to the difference in cost and the current temperature
         else:
-            acceptance_probability = math.exp(-(new_cost - best_cost) / temperature)
+            acceptance_probability = math.exp(-(new_cost - best_cost) / epoch*temperature)
 
             if random.random() < acceptance_probability:
                 current_path = new_path
                 current_cost = new_cost
 
         # Decrease the temperature according to the cooling rate
-        temperature *= 1 - cooling_rate
+        temperature = get_new_temp(config['Cooling_Type'], config['Temperature'], epoch, cooling_rate)
+        #print(temperature)
 
     stop_time = time.time_ns()
 
@@ -49,6 +50,14 @@ def solve_tsp(matrix, config):
         'solution': best_cost,
         'path': (0, *best_path, 0)
     }
+
+
+def get_new_temp(type, initial, epoch, rate):
+    if type == 'Geo':
+        return initial * rate**epoch
+
+    if type == 'Lin':
+        return initial - rate*epoch
 
 
 def calc_cost(path, matrix):
@@ -78,6 +87,7 @@ def rand_path_v(path, _not=None):
         val = random.randint(0, len(path) - 1)
 
     return val
+
 
 def generate_neighbor(path):
     path = list(path)

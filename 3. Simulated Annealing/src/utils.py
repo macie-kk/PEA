@@ -36,6 +36,9 @@ def parse(value):
         return num
     except: pass
 
+    if value == '':
+        return None
+
     return value
 
 
