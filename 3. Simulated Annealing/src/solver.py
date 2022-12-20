@@ -2,46 +2,66 @@ import math
 import random
 import time
 
+
 def solve_tsp(matrix, config):
-    temperature, cooling_rate, max_epochs = config['Temperature'], config['Cooling_Rate'], config['Epochs']
-    T_MIN = 0.00001
-    
+    # poczatkowa temperatura, schemat chlodzenia, wspolczynnik chlodzenia i ilosc epok dla kazdej iteracji
+    t_init, c_schedule, c_rate, epochs = config['Temperature'], config['Cooling_Schedule'], config['c_rate'], config['Epochs']
+
+    # bufor ostatnich wynikow i jego rozmiar
+    buff = []
+    max_buff_size = 1000
+
+    # rozpoczecie pomiaru czasu
     start_time = time.time_ns()
 
+    # wygenerowanie losowej sciezki i obliczenie jej kosztu
     current_path = get_random_path(matrix)
     current_cost = calc_cost(current_path, matrix)
 
+    # tymczasowe zapisanie losowej sciezki jako najlepszej
     best_path = current_path
-    best_cost = current_cost
+    best_cost = calc_cost(current_path, matrix)
 
-    epoch = 0
-    while temperature > T_MIN and epoch < max_epochs:
-        epoch += 1
-        new_path = generate_neighbor(current_path)
-        new_cost = calc_cost(new_path, matrix)
+    # obecna i minimalna temperatura
+    temperature = t_init
+    t_min = 0.0001
 
-        # If the new solution is better than the current solution, accept it
-        if new_cost < current_cost:
-            current_path = new_path
-            current_cost = new_cost
+    iteration = 0
+    while temperature > t_min:
+        iteration += 1
 
-            # If the new solution is also better than the best solution, update the best solution
+        # optymalizacja rozwiazania dla kazdej temperatury zgodnie z iloscia epok
+        for _ in range(epochs):
+            new_path = generate_neighbor(current_path)
+            new_cost = calc_cost(new_path, matrix)
+
+            # jezeli nowe rozwiazanie jest lepsze niz najlepsze to je zaktualizuj
             if new_cost < best_cost:
-                best_path = new_path
-                best_cost = new_cost
+                best_cost, best_path = new_cost, new_path
+                continue
 
-        # If the new solution is worse than the current solution, accept it with a probability
-        # that is proportional to the difference in cost and the current temperature
-        else:
-            acceptance_probability = math.exp(-(new_cost - best_cost) / epoch*temperature)
+            # jezeli nowe rozwiazanie jest lepsze niz lokalnie najlepsze to je zaktualizuj
+            if new_cost < current_cost:
+                current_cost, current_path = new_cost, new_path
+                continue
 
-            if random.random() < acceptance_probability:
-                current_path = new_path
-                current_cost = new_cost
+            # jezeli nowe rozwiazanie jest gorsze od obecnego to zaakceptuj je z prawdopodobienstwem
+            if random.random() < math.exp(-(new_cost - current_cost) / temperature):
+                current_cost, current_path = new_cost, new_path
 
-        # Decrease the temperature according to the cooling rate
-        temperature = get_new_temp(config['Cooling_Type'], config['Temperature'], epoch, cooling_rate)
-        #print(temperature)
+        # zmniejsz temperature zgodnie ze schematem chlodzenia
+        temperature = get_new_temp(t_init, c_schedule, c_rate, iteration)
+
+        # dodaj obecne rozwiazanie do bufora
+        buff.append(best_cost)
+
+        # jezeli przekroczyl rozmiar to usun pierwsze
+        if len(buff) > max_buff_size:
+            buff.pop(0)
+
+        # jezeli wszystkie ostatnie rozwiazania sa takie same i temperatura niska przerwij dzialanie
+        if sum(buff) == max_buff_size*best_cost and temperature < 1:
+            break
 
     stop_time = time.time_ns()
 
@@ -52,12 +72,14 @@ def solve_tsp(matrix, config):
     }
 
 
-def get_new_temp(type, initial, epoch, rate):
-    if type == 'Geo':
-        return initial * rate**epoch
+def get_new_temp(t_init, schedule, rate, iteration):
+    # schemat geometryczny
+    if schedule == 'Geo':
+        return t_init*rate**iteration
 
-    if type == 'Lin':
-        return initial - rate*epoch
+    # schemat liniowy
+    if schedule == 'Lin':
+        return t_init / (1 + rate * iteration)
 
 
 def calc_cost(path, matrix):
@@ -66,34 +88,21 @@ def calc_cost(path, matrix):
         cost += matrix[path[i]][path[i + 1]]
 
     cost += matrix[path[-1]][0]
+
     return cost
 
 
 def get_random_path(matrix):
-    path = []
-    tmp_path = [v for v in range(1, len(matrix))]
-    
-    for _ in range(len(tmp_path)):
-        next_point = tmp_path[random.randint(0, len(tmp_path) - 1)]
-        path.append(next_point)
-        tmp_path.remove(next_point)
+    path = [v for v in range(1, len(matrix))]
+    random.shuffle(path)
 
     return tuple(path)
 
 
-def rand_path_v(path, _not=None):
-    val = random.randint(0, len(path) - 1)
-    while(val == _not):
-        val = random.randint(0, len(path) - 1)
-
-    return val
-
-
 def generate_neighbor(path):
     path = list(path)
-    index_1 = rand_path_v(path)
-    index_2 = rand_path_v(path, _not=index_1)
 
+    index_1, index_2 = random.sample(range(len(path)), 2)
     path[index_1], path[index_2] = path[index_2], path[index_1]
 
     return tuple(path)
@@ -106,8 +115,4 @@ def generate_neighbor(path):
 3. Metoda najbliższego sąsiada: wybieranie najlepszego rozwiązania spośród dostępnych w sąsiedztwie.
 4. Metoda najlepszego sąsiada: wybieranie najlepszego rozwiązania spośród tych, które są lepsze niż obecnie posiadane.
 5. Metoda wybierania względem wagi: wybieranie rozwiązania o największej wadze spośród dostępnych w sąsiedztwie.
-
-1. Boltzmann - T(k+1) = T(k) * a gdzie a jest współczynnikiem chłodzenia
-2. Cauchy - T(k+1) = T(k) / (1 + a*k) gdzie a jest współczynnikiem chłodzenia, k jest numer kroku.
-
 """
