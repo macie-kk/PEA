@@ -5,7 +5,7 @@ import time
 
 def solve_tsp(matrix, config):
     # poczatkowa temperatura, schemat chlodzenia, wspolczynnik chlodzenia i ilosc epok dla kazdej iteracji
-    t_init, c_schedule, c_rate, epochs = config['Temperature'], config['Cooling_Schedule'], config['c_rate'], config['Epochs']
+    t_init, c_schedule, c_rate, epochs = config['Temperature'], config['Cooling_Schedule'], config['Cooling_Rate'], config['Epochs']
 
     # bufor ostatnich wynikow i jego rozmiar
     buff = []
@@ -15,7 +15,7 @@ def solve_tsp(matrix, config):
     start_time = time.time_ns()
 
     # wygenerowanie losowej sciezki i obliczenie jej kosztu
-    current_path = get_random_path(matrix)
+    current_path = get_start_path(config['Start_Path'], matrix)
     current_cost = calc_cost(current_path, matrix)
 
     # tymczasowe zapisanie losowej sciezki jako najlepszej
@@ -92,11 +92,30 @@ def calc_cost(path, matrix):
     return cost
 
 
-def get_random_path(matrix):
-    path = [v for v in range(1, len(matrix))]
-    random.shuffle(path)
+def get_start_path(method, matrix):
+    if method == 'Natural':
+        path = [v for v in range(1, len(matrix))] 
+        return tuple(path)
 
-    return tuple(path)
+    if method == 'Random':
+        path = [v for v in range(1, len(matrix))]
+        random.shuffle(path)
+        return tuple(path)
+
+    if method == 'Greedy':
+        path = [random.randint(1, len(matrix) - 1)]
+
+        for vertex in range(1, len(matrix) - 1):
+            min_cost = float('inf')
+            next_v = None
+
+            for i in range(1, len(matrix)):
+                if i not in path and matrix[vertex][i] < min_cost:
+                    min_cost = matrix[vertex][i]
+                    next_v = i
+            path.append(next_v)
+
+        return tuple(path)
 
 
 def generate_neighbor(path):

@@ -22,25 +22,28 @@ def run_solve(cfg: dict):
     # zapisywanie wszystkich znalezionych rozwiazan
     outputs = []
     for i in range(repeats):
-        if i > 1: print(f'[{i+1}/{repeats}]      ', end='\r')
+        if repeats > 1: print(f'[{i+1}/{repeats}]      ', end='\r')
         outputs.append(solve_tsp(matrix, cfg))
         
     # szkielet obiektu wyjsciowego
     final_output = get_output_struct(cfg)
 
+    errors = []
     # znajdowanie najlepszego rozwiazania i sciezki sposrod wszystkich powtorzen
     for output in outputs:
         final_output['time'] += output['time']
 
         # wybor najlepszego znalezionego rozwiazania
         solution = output['solution']
+        errors.append(round((1 - cfg["Solution"]/solution) * 100))
         if solution < final_output['solution']:
             final_output['solution'] = solution
             final_output['path'] = output['path']
 
     # dokladnosc znalezionego rozwiazania na podstawie optymalnego + zaokraglony czas pracy
-    final_output['accuracy']  = round(cfg["Solution"]/final_output["solution"] * 100)    
+    final_output['accuracy'] = round(cfg["Solution"]/final_output["solution"] * 100)    
     final_output['time'] = str(round_seconds(final_output['time'], cfg['Precision'])).replace('.', ',')
+    final_output['avg_error'] = sum(errors)/len(errors)
 
     print_results(final_output, cfg)
     return final_output
@@ -52,10 +55,11 @@ def get_output_struct(cfg):
         'repeats': cfg['Repeats'],
         'solution': float('inf'),
         'accuracy': 0,
+        'avg_error': 0,
         'path': (),
         'temp': cfg['Temperature'],
         'cooling_rate': cfg['Cooling_Rate'],
-        'cooling_type': cfg['Cooling_Type'],
+        'cooling_type': cfg['Cooling_Schedule'],
         'epochs': cfg['Epochs'],
         'time': 0,
     }
@@ -67,6 +71,7 @@ def print_results(final_output: dict, cfg: dict):
 
     if cfg['Solution'] is not None:
         print(f'\n--> Dokladnosc: {final_output["accuracy"]}%')
+        print(f'--> Sredni blad: {final_output["avg_error"]}%')
     print(f'--> Czas: {final_output["time"]}s')
 
 

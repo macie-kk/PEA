@@ -14,6 +14,7 @@ class Logger:
             'l_wykonan': output["repeats"],
             'naj_rozw.': output["solution"],
             'dokladnosc [%]': output["accuracy"],
+            'sredni_blad [%]': output["avg_error"],
             'naj_sciezka': output["path"],
             'temp_pocz.': output["temp"],
             'wsp_chlodz.': output["cooling_rate"],
