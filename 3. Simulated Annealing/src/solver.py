@@ -60,7 +60,7 @@ def solve_tsp(matrix, config):
             buff.pop(0)
 
         # jezeli wszystkie ostatnie rozwiazania sa takie same i temperatura niska przerwij dzialanie
-        if sum(buff) == max_buff_size*best_cost and temperature < 1:
+        if sum(buff) == max_buff_size*best_cost and temperature < (5 if c_schedule == 'Geo' else 10):
             break
 
     stop_time = time.time_ns()
