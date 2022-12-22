@@ -57,11 +57,12 @@ def get_output_struct(cfg):
         'accuracy': 0,
         'avg_error': 0,
         'path': (),
+        'time': 0,
         'temp': cfg['Temperature'],
         'cooling_rate': cfg['Cooling_Rate'],
-        'cooling_type': cfg['Cooling_Schedule'],
+        'cooling_schedule': cfg['Cooling_Schedule'],
+        'neighbor_search': cfg['Neighbor_Search'],
         'epochs': cfg['Epochs'],
-        'time': 0,
     }
 
 

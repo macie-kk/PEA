@@ -32,7 +32,7 @@ def solve_tsp(matrix, config):
 
         # optymalizacja rozwiazania dla kazdej temperatury zgodnie z iloscia epok
         for _ in range(epochs):
-            new_path = generate_neighbor(current_path)
+            new_path = generate_neighbor(current_path, config['Neighbor_Search'], matrix)
             new_cost = calc_cost(new_path, matrix)
 
             # jezeli nowe rozwiazanie jest lepsze niz najlepsze to je zaktualizuj
@@ -81,6 +81,8 @@ def get_new_temp(t_init, schedule, rate, iteration):
     if schedule == 'Lin':
         return t_init / (1 + rate * iteration)
 
+    raise Exception("Unknown cooling schedule")
+
 
 def calc_cost(path, matrix):
     cost = matrix[0][path[0]]
@@ -94,7 +96,7 @@ def calc_cost(path, matrix):
 
 def get_start_path(method, matrix):
     if method == 'Natural':
-        path = [v for v in range(1, len(matrix))] 
+        path = [v for v in range(1, len(matrix))]
         return tuple(path)
 
     if method == 'Random':
@@ -114,24 +116,39 @@ def get_start_path(method, matrix):
                     min_cost = matrix[vertex][i]
                     next_v = i
             path.append(next_v)
-
         return tuple(path)
 
+    raise Exception("Unknown start path method")
 
-def generate_neighbor(path):
+
+def generate_neighbor(path, method, matrix):
     path = list(path)
 
-    index_1, index_2 = random.sample(range(len(path)), 2)
-    path[index_1], path[index_2] = path[index_2], path[index_1]
+    if method == 'Swap':
+        index_1, index_2 = random.sample(range(len(path)), 2)
+        path[index_1], path[index_2] = path[index_2], path[index_1]
+        return tuple(path)
 
-    return tuple(path)
+    if method == 'Closest':
+        costs = {}
+        index = random.randint(0, len(path) - 1)
+        for i in range(len(path)):
+            if i == index: continue
+            tmp_path = path.copy()
+            tmp_path[i], tmp_path[index] = tmp_path[index], tmp_path[i]
+            costs[calc_cost(tmp_path, matrix)] = tmp_path
+                
+        min_cost = min(costs.keys())
+        return tuple(costs[min_cost])
+
+    raise Exception('Unknown neighbor search method')
 
 
 """
 ---- Metody wyboru rozwiązania w sąsiedztwie
-1. Metoda losowego wyboru: losowe wybieranie jednego lub więcej rozwiązań spośród tych, które są dostępne w sąsiedztwie.
+1!. Metoda losowego wyboru: losowe wybieranie jednego lub więcej rozwiązań spośród tych, które są dostępne w sąsiedztwie.
 2. Metoda łańcuchowa: wybieranie jednego z dostępnych rozwiązań zgodnie z ustalonym porządkiem.
-3. Metoda najbliższego sąsiada: wybieranie najlepszego rozwiązania spośród dostępnych w sąsiedztwie.
+3!. Metoda najbliższego sąsiada: wybieranie najlepszego rozwiązania spośród dostępnych w sąsiedztwie.
 4. Metoda najlepszego sąsiada: wybieranie najlepszego rozwiązania spośród tych, które są lepsze niż obecnie posiadane.
 5. Metoda wybierania względem wagi: wybieranie rozwiązania o największej wadze spośród dostępnych w sąsiedztwie.
 """
