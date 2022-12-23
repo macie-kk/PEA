@@ -74,6 +74,8 @@ def read_matrix(filepath: str):
 
         return matrix
     
+    ############## TSPLIB FORMAT ##############
+    
     problem = tsplib95.load(filepath)
     size_range = range(len(list(problem.get_nodes())))
 

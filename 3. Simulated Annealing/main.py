@@ -5,9 +5,14 @@ from src.constants import INPUT_DIR, OUTPUT_DIR
 import sys
 
 
-def main(cfg: dict = None):
-    if cfg is None:
-        cfg = load_config()
+def main(override_cfg: dict = None):
+    cfg = load_config()
+
+    # nadpisz wybrane klucze configu
+    if override_cfg is not None:
+        for key in override_cfg:
+            cfg[key] = override_cfg[key]
+        
 
     output = run_solve(cfg)
     save_to_file(cfg, output)

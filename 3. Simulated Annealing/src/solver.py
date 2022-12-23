@@ -142,13 +142,3 @@ def generate_neighbor(path, method, matrix):
         return tuple(costs[min_cost])
 
     raise Exception('Unknown neighbor search method')
-
-
-"""
----- Metody wyboru rozwiązania w sąsiedztwie
-1!. Metoda losowego wyboru: losowe wybieranie jednego lub więcej rozwiązań spośród tych, które są dostępne w sąsiedztwie.
-2. Metoda łańcuchowa: wybieranie jednego z dostępnych rozwiązań zgodnie z ustalonym porządkiem.
-3!. Metoda najbliższego sąsiada: wybieranie najlepszego rozwiązania spośród dostępnych w sąsiedztwie.
-4. Metoda najlepszego sąsiada: wybieranie najlepszego rozwiązania spośród tych, które są lepsze niż obecnie posiadane.
-5. Metoda wybierania względem wagi: wybieranie rozwiązania o największej wadze spośród dostępnych w sąsiedztwie.
-"""

@@ -15,13 +15,13 @@ class Logger:
             'naj_rozw.': output["solution"],
             'dokladnosc [%]': output["accuracy"],
             'sredni_blad [%]': output["avg_error"],
-            'naj_sciezka': output["path"],
             'czas [s]': output["time"],
             'temp_pocz.': output["temp"],
             'wsp_chlodz.': output["cooling_rate"],
             'schem_chlodz.': output["cooling_schedule"],
             'rozw_w_sasiedztwie': output['neighbor_search'],
             'limit_epok': output["epochs"],
+            'naj_sciezka': output["path"],
         }
 
 
