@@ -47,7 +47,7 @@ def run_solve(cfg: dict):
 
     # dokladnosc znalezionego rozwiazania na podstawie optymalnego + zaokraglony czas pracy
     final_output['accuracy'] = round(cfg["Solution"]/final_output["solution"] * 100)    
-    final_output['time'] = str(round_seconds(final_output['time'], cfg['Precision'])).replace('.', ',')
+    final_output['time'] = round_seconds(final_output['time'], cfg['Precision'])
     final_output['avg_error'] = sum(errors)/len(errors)
 
     print_results(final_output, cfg)
