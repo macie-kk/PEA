@@ -12,12 +12,13 @@ def run_test():
     # for t in [100, 1000, 10000, 10000]    # temperature
     # for e in [1, 50, 100, 150]            # epochs
     # for cs in ['Geo', 'Lin']              # cooling schedule
+    # for ns in ['Swap', 'Closest']         # neighbor search
 
-    for ns in ['Swap', 'Closest']:
+    for sp in ['Greedy', 'Natural', 'Random']:
         for file in inputs:
             config = {
-                'Neighbor_Search': ns,
-                'Output_File': f'tsp_results_neighbor-search-{ns}.tsv',
+                'Start_Path': sp,
+                'Output_File': f'tsp_results_start-path-{sp}.tsv',
                 'Input_File': file['file'],
                 'Solution': file['solution']
             }
