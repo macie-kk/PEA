@@ -13,15 +13,17 @@ def main(override_cfg: dict = None):
     if override_cfg is not None:
         for key in override_cfg:
             cfg[key] = override_cfg[key]
-        
+
     inputs = str_to_tuple(cfg['Input_Files'])
     for input_f in inputs:
         col_split = input_f.split(':')
 
         solution = None
         filename = col_split[0].strip()
-        try: solution = int(col_split[1].strip())
-        except: pass
+        try:
+            solution = int(col_split[1].strip())
+        except:
+            pass
 
         output = run_solve(cfg, filename, solution)
         save_to_file(cfg, output)
@@ -36,9 +38,10 @@ def run_solve(cfg: dict, cfg_input: str, cfg_solution: int):
     # zapisywanie wszystkich znalezionych rozwiazan
     outputs = []
     for i in range(repeats):
-        if repeats > 1: print(f'[{i+1}/{repeats}]      ', end='\r')
+        if repeats > 1:
+            print(f'[{i+1}/{repeats}]      ', end='\r')
         outputs.append(solve_tsp(matrix, cfg))
-        
+
     # szkielet obiektu wyjsciowego
     final_output = get_output_struct(cfg)
     final_output['input_file'] = cfg_input
@@ -58,7 +61,7 @@ def run_solve(cfg: dict, cfg_input: str, cfg_solution: int):
     # dokladnosc znalezionego rozwiazania na podstawie optymalnego + zaokraglony czas pracy
     final_output['accuracy'] = round(cfg_solution/final_output["solution"] * 100) if cfg_solution is not None else '---'
     final_output['time'] = round_seconds(final_output['time'], cfg['Precision'])
-    final_output['avg_error'] = sum(errors)/len(errors)
+    final_output['avg_error'] = sum(errors)/len(errors) if cfg_solution is not None else '---'
 
     print_results(final_output, cfg_solution)
     return final_output
@@ -72,11 +75,11 @@ def get_output_struct(cfg):
         'avg_error': 0,
         'path': (),
         'time': 0,
-        'temp': cfg['Temperature'],
-        'cooling_rate': cfg['Cooling_Rate'],
-        'cooling_schedule': cfg['Cooling_Schedule'],
-        'neighbor_search': cfg['Neighbor_Search'],
-        'epochs': cfg['Epochs'],
+        'ants': cfg['Ants'],
+        'iterations': cfg['Iterations'],
+        'alpha': cfg['Alpha'],
+        'beta': cfg['Beta'],
+        'rho': cfg['Rho'],
     }
 
 

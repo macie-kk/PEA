@@ -7,7 +7,6 @@ class Logger:
         self.output_dir = out_dir
         self.output_path = f'{out_dir}/{file_name}'
 
-
     def get_fields(self, output: dict):
         return {
             'instancja': output['input_file'],
@@ -16,14 +15,13 @@ class Logger:
             'dokladnosc [%]': output["accuracy"],
             'sredni_blad [%]': output["avg_error"],
             'czas [s]': output["time"],
-            'temp_pocz.': output["temp"],
-            'wsp_chlodz.': output["cooling_rate"],
-            'schem_chlodz.': output["cooling_schedule"],
-            'rozw_w_sasiedztwie': output['neighbor_search'],
-            'limit_epok': output["epochs"],
+            'ants': output['ants'],
+            'iteracje': output['iterations'],
+            'alpha': output['alpha'],
+            'beta': output['beta'],
+            'rho': output['rho'],
             'naj_sciezka': output["path"],
         }
-
 
     def get_header(self, fields: dict) -> str:
         header = ''
@@ -33,14 +31,14 @@ class Logger:
 
         return header
 
-
     # tworzenie pliku wyjsciowego i wiersza naglowkowego
+
     def write_header(self, header: str):
         with open(self.output_path, 'w') as f:
             f.write(header)
 
-
     # zapisywanie danych do pliku rozdzielonych tabulatorem -- czasy rozdzielone srednikiem
+
     def write_fields(self, fields):
         fields_line = ''
         for field in fields:
@@ -49,7 +47,6 @@ class Logger:
 
         with open(self.output_path, 'a') as f:
             f.write(fields_line)
-
 
     def log(self, output: dict):
         # tworzenie folderu wyjsciowego
