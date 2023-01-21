@@ -20,6 +20,7 @@ class Logger:
             'alpha': output['alpha'],
             'beta': output['beta'],
             'rho': output['rho'],
+            'tau': output['tau'],
             'naj_sciezka': output["path"],
         }
 

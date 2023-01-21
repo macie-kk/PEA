@@ -80,6 +80,7 @@ def get_output_struct(cfg):
         'alpha': cfg['Alpha'],
         'beta': cfg['Beta'],
         'rho': cfg['Rho'],
+        'tau': cfg['Tau']
     }
 
 

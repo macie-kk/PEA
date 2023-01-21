@@ -12,9 +12,10 @@ def solve_tsp(matrix, config):
     alpha = config['Alpha']
     beta = config['Beta']
     rho = config['Rho']
+    tau = config['Tau']
 
     # Initialize pheromone matrix
-    pheromones = [[0.1 for _ in range(m_size)] for _ in range(m_size)]
+    pheromones = [[tau for _ in range(m_size)] for _ in range(m_size)]
     best_solution = {"cities": [], "distance": float("inf")}
 
     start_time = time.time_ns()
@@ -47,13 +48,7 @@ def solve_tsp(matrix, config):
             ant_solutions.append(ant_solution)
 
         # Update pheromones
-        for city1 in range(m_size):
-            for city2 in range(m_size):
-                if city1 != city2:
-                    pheromones[city1][city2] *= (1 - rho)
-                    for ant_solution in ant_solutions:
-                        if city2 in ant_solution["cities"]:
-                            pheromones[city1][city2] += (rho / ant_solution["distance"])
+        pheromones = update_pheromones(pheromones, ant_solutions, rho, m_size)
 
         # Find the best solution
         best_solution = {"cities": [], "distance": float("inf")}
@@ -73,3 +68,14 @@ def solve_tsp(matrix, config):
 def normalize_matrix(matrix: list):
     ml = len(matrix)
     return [[0.00001 if matrix[i][j] <= 0 else matrix[i][j] for i in range(ml)] for j in range(ml)]
+
+
+def update_pheromones(ph: list, ant_solutions: list, rho:float, m_size: int):
+    for city1 in range(m_size):
+        for city2 in range(m_size):
+            ph[city1][city2] *= (1 - rho)
+
+            for ant_solution in ant_solutions:
+                if city2 in ant_solution["cities"]:
+                    ph[city1][city2] += (rho / ant_solution["distance"])
+    return ph
