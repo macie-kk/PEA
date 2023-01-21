@@ -3,11 +3,13 @@ import tsplib95
 
 # ladowanie konfiguracji
 # format: Klucz=Wartosc # komentarz
+
+
 def load_config():
     config = {}
     lines = get_file_lines('config.ini')
     for line in lines:
-        if line.startswith('#') or len(line.strip()) == 0: # pomijanie pustych linii i komentarzy
+        if line.startswith('#') or len(line.strip()) == 0:  # pomijanie pustych linii i komentarzy
             continue
 
         key_value_split = line.split('=')               # rozdzielenie klucza i wartosci
@@ -29,12 +31,14 @@ def parse(value):
     try:
         num = int(value)
         return num
-    except: pass
+    except:
+        pass
 
     try:
         num = float(value)
         return num
-    except: pass
+    except:
+        pass
 
     if value == '':
         return None
@@ -46,12 +50,12 @@ def parse(value):
 def str_to_tuple(string: str):
     string = string.replace('(', '').replace(')', '')
     string = string.split(',')
-    
+
     values = []
     for val in string:
         values.append(parse(val.strip()))
 
-    return tuple(values) 
+    return tuple(values)
 
 
 # wczytywanie macierzy
@@ -73,17 +77,21 @@ def read_matrix(filepath: str):
                 matrix[i].append(int(v))
 
         return matrix
-    
+
     ############## TSPLIB FORMAT ##############
-    
+
     problem = tsplib95.load(filepath)
     size_range = range(len(list(problem.get_nodes())))
 
-    matrix = [[] for _ in size_range]  # inicjalizacja macierzy 2D
+    # inicjalizacja macierzy 2D
+    matrix = [[] for _ in size_range]
+
+    # sprawdzanie czy macierz jest w formacie wspolrzednych
+    coords = problem.display_data_type == 'COORD_DISPLAY'
 
     for i in size_range:
         for j in size_range:
-            matrix[i].append(problem.get_weight(i, j))
+            matrix[i].append(problem.get_weight(i+1 if coords else i, j+1 if coords else j))
 
     return matrix
 

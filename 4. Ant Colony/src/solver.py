@@ -30,7 +30,7 @@ def solve_tsp(matrix, config):
                 probabilities = [0]*m_size
                 for city in range(m_size):
                     if city not in ant_solution['cities']:
-                        visibility = 1 / matrix[last_city][city] if matrix[last_city][city] != 0 else 1
+                        visibility = 1 / matrix[last_city][city] if matrix[last_city][city] > 0 else 1
                         probabilities[city] += (pheromones[last_city][city] ** alpha) * (visibility ** beta)
 
                 probabilities = [x / sum(probabilities) for x in probabilities]
@@ -51,7 +51,10 @@ def solve_tsp(matrix, config):
 
             ant_solutions.append(ant_solution)
 
-        best_solution = get_best_solution(ant_solutions)
+        best_ant_solution = get_best_ant_solution(ant_solutions)
+        if best_ant_solution['distance'] < best_solution['distance']:
+            best_solution = best_ant_solution
+
         pheromones = update_pheromones(pheromones, rho, ant_solutions, best_solution)
 
     stop_time = time.time_ns()
@@ -63,7 +66,7 @@ def solve_tsp(matrix, config):
     }
 
 
-def get_best_solution(ant_solutions):
+def get_best_ant_solution(ant_solutions):
     best_solution = {"cities": [], "distance": float("inf")}
     for ant_solution in ant_solutions:
         if ant_solution["distance"] < best_solution["distance"]:
