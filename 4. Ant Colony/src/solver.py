@@ -5,11 +5,10 @@ import time
 def solve_tsp(matrix, config):
     # parametry
     m_size = len(matrix)                    # rozmiar macierzy
-    num_ants = config['Ants']               # liczba mrówek
+    num_ants = m_size if config['Ants'] == 0 else config['Ants']  # liczba mrówek
     num_iterations = config['Iterations']   # liczba iteracji
     alpha = config['Alpha']                 # waga feromonów
     beta = config['Beta']                   # waga odległości
-    rho = config['Rho']                     # współczynnik zanikania feromonów
     tau = config['Tau']                     # początkowa wartość feromonów
 
     # macierz feromonów
@@ -25,7 +24,7 @@ def solve_tsp(matrix, config):
         ant_solutions = []
 
         # petla dla kazdej mrówki
-        for ant in range(num_ants):
+        for _ in range(num_ants):
             ant_solution = {"cities": [random.randint(0, m_size-1)], "distance": 0}
 
             # petla dla kazdego miasta
