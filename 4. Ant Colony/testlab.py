@@ -5,6 +5,7 @@ from main import main
     i zapisywaniu w dedykowanym pliku
 '''
 
+
 def run_test():
     inputs = get_inputs()
 
@@ -25,56 +26,81 @@ def run_test():
             main(config)
 
 
+# burma14.tsp:3323, gr17.tsp:2085, gr21.tsp:2707, gr24.tsp:1272, bays29.tsp:2020, ftv33.atsp:1286, ftv44.atsp:1613, ft53.atsp:6905, ftv70.atsp:1950, ch150.tsp:6528, ftv170.atsp:2755, gr202.tsp:40160, rbg323.atsp:1326, pcb442.tsp:50778, rbg443.atsp:2720, gr666.tsp: 294538, pr1002.tsp:259045, pr2392.tsp:378032
 def get_inputs():
     return [
         {
-            'file': 'tsp_10.txt',
-            'solution': 212
+            'file': 'burma14.tsp',
+            'solution': 3323,
         },
         {
-            'file': 'tsp_12.txt',
-            'solution': 264
+            'file': 'gr17.tsp',
+            'solution': 2085,
         },
         {
-            'file': 'tsp_15.txt',
-            'solution': 291
-        },
-        {
-            'file': 'tsp_20.txt',
-            'solution': 386
+            'file': 'gr21.tsp',
+            'solution': 2707,
         },
         {
             'file': 'gr24.tsp',
-            'solution': 1272
+            'solution': 1272,
         },
         {
-            'file': 'ftv35.atsp',
-            'solution': 1473
+            'file': 'bays29.tsp',
+            'solution': 2020,
         },
         {
-            'file': 'ftv55.atsp',
-            'solution': 1608
+            'file': 'ftv33.atsp',
+            'solution': 1286,
+        },
+        {
+            'file': 'ftv44.atsp',
+            'solution': 1613,
+        },
+        {
+            'file': 'ft53.atsp',
+            'solution': 6905,
         },
         {
             'file': 'ftv70.atsp',
-            'solution': 1950 
+            'solution': 1950,
         },
         {
-            'file': 'kro124p.atsp',
-            'solution': 36230
+            'file': 'ch150.tsp',
+            'solution': 6528,
         },
         {
             'file': 'ftv170.atsp',
-            'solution': 2755
+            'solution': 2755,
+        },
+        {
+            'file': 'gr202.tsp',
+            'solution': 40160,
         },
         {
             'file': 'rbg323.atsp',
-            'solution': 1326
+            'solution': 1326,
         },
         {
-            'file': 'rbg403.atsp',
-            'solution': 2465
-        }
+            'file': 'pcb442.tsp',
+            'solution': 50778,
+        },
+        {
+            'file': 'rbg443.atsp',
+            'solution': 2720,
+        },
+        {
+            'file': 'gr666.tsp',
+            'solution': 294538,
+        },
+        {
+            'file': 'pr1002.tsp',
+            'solution': 259045,
+        },
+        {
+            'file': 'pr2392.tsp',
+            'solution': 378032,
+        },
     ]
 
 

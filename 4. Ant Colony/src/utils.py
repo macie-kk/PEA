@@ -1,10 +1,8 @@
 import os
 import tsplib95
 
-# ladowanie konfiguracji
-# format: Klucz=Wartosc # komentarz
 
-
+# ladowanie konfiguracji -- format: Klucz=Wartosc # komentarz
 def load_config():
     config = {}
     lines = get_file_lines('config.ini')
@@ -14,11 +12,12 @@ def load_config():
 
         key_value_split = line.split('=')               # rozdzielenie klucza i wartosci
         comment_split = key_value_split[1].split('#')   # rozdzielenie wartosci i komentarza
-        config[key_value_split[0]] = parse(comment_split[0].strip())
+        config[key_value_split[0]] = parse(comment_split[0].strip())    # parsowanie wartosci i usuwanie bialych znakow
 
     return config
 
 
+# przeliczanie czasu w nanosekundach na sekundy z podana precyzja
 def round_seconds(time_ns: int, precision: int):
     return round(time_ns * 10**(-9), precision)
 
@@ -87,7 +86,7 @@ def read_matrix(filepath: str):
     matrix = [[] for _ in size_range]
 
     # sprawdzanie czy macierz jest w formacie wspolrzednych
-    coords = problem.display_data_type == 'COORD_DISPLAY'
+    coords = 'node_coords' in problem.as_dict().keys()
 
     for i in size_range:
         for j in size_range:

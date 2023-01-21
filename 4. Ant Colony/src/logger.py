@@ -21,6 +21,8 @@ class Logger:
             'beta': output['beta'],
             'rho': output['rho'],
             'tau': output['tau'],
+            'Q': output['Q'],
+            'algorytm': output['Algorithm'],
             'naj_sciezka': output["path"],
         }
 
