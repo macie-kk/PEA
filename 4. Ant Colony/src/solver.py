@@ -98,20 +98,19 @@ def update_pheromones(pheromones: list, cfg: dict, matrix: list, ant_solutions: 
 
             pheromones[city_1][city_2] *= (1 - cfg['Rho'])  # zanikanie feromonów
 
-    ant_index = 0
+    Q = 1
     for solution in ant_solutions:
         for i in range(len(solution['cities'])-1):
             city_1 = solution['cities'][i]
             city_2 = solution['cities'][i+1]
-            ant_index += 1
 
-            if cfg['Algorithm'] == 'DAS':
-                pheromones[city_1][city_2] += cfg['Q']
+            if cfg['Ph_Decay'] == 'DAS':
+                pheromones[city_1][city_2] += Q
 
-            if cfg['Algorithm'] == 'QAS':
-                pheromones[city_1][city_2] += cfg['Q']/matrix[city_1][city_2]
+            if cfg['Ph_Decay'] == 'QAS':
+                pheromones[city_1][city_2] += Q/matrix[city_1][city_2] if matrix[city_1][city_2] > 0 else 1
 
-            if cfg['Algorithm'] == 'CAS':
-                pheromones[city_1][city_2] += cfg['Q']/solution['distance']
+            if cfg['Ph_Decay'] == 'CAS':
+                pheromones[city_1][city_2] += Q/solution['distance']
 
     return pheromones

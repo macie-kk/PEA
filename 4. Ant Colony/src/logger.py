@@ -14,15 +14,14 @@ class Logger:
             'naj_rozw.': output["solution"],
             'dokladnosc [%]': output["accuracy"],
             'sredni_blad [%]': output["avg_error"],
-            'czas [s]': output["time"],
-            'ants': output['ants'],
+            'sredni_czas [s]': output["time"],
             'iteracje': output['iterations'],
             'alpha': output['alpha'],
             'beta': output['beta'],
             'rho': output['rho'],
             'tau': output['tau'],
-            'Q': output['Q'],
-            'algorytm': output['Algorithm'],
+            'mrowki': output['ants'],
+            'sch_rozkl': output['ph_decay'],
             'naj_sciezka': output["path"],
         }
 

@@ -43,7 +43,7 @@ def run_solve(cfg: dict, cfg_input: str, cfg_solution: int):
         outputs.append(solve_tsp(matrix, cfg))
 
     # szkielet obiektu wyjsciowego
-    final_output = get_output_struct(cfg)
+    final_output = get_output_struct(cfg, matrix)
     final_output['input_file'] = cfg_input
 
     errors = []
@@ -60,14 +60,14 @@ def run_solve(cfg: dict, cfg_input: str, cfg_solution: int):
 
     # dokladnosc znalezionego rozwiazania na podstawie optymalnego + zaokraglony czas pracy
     final_output['accuracy'] = round(cfg_solution/final_output["solution"] * 100) if cfg_solution is not None else '---'
-    final_output['time'] = round_seconds(final_output['time'], cfg['Precision'])
+    final_output['time'] = round_seconds(final_output['time'] / repeats, cfg['Precision'])
     final_output['avg_error'] = sum(errors)/len(errors) if cfg_solution is not None else '---'
 
     print_results(final_output, cfg_solution)
     return final_output
 
 
-def get_output_struct(cfg):
+def get_output_struct(cfg, matrix):
     return {
         'repeats': cfg['Repeats'],
         'solution': float('inf'),
@@ -75,20 +75,19 @@ def get_output_struct(cfg):
         'avg_error': 0,
         'path': (),
         'time': 0,
-        'ants': cfg['Ants'],
+        'ants': len(matrix) if cfg['Ants'] == 0 else cfg['Ants'],
         'iterations': cfg['Iterations'],
         'alpha': cfg['Alpha'],
         'beta': cfg['Beta'],
         'rho': cfg['Rho'],
         'tau': cfg['Tau'],
-        'Q': cfg['Q'],
-        'Algorithm': cfg['Algorithm'],
+        'ph_decay': cfg['Ph_Decay'],
     }
 
 
 def print_results(final_output: dict, cfg_solution: int):
     print('Rozwiazanie: ', final_output['solution'])
-    print('Sciezka: ', final_output['path'])
+    # print('Sciezka: ', final_output['path'])
 
     if cfg_solution is not None:
         print(f'\n--> Dokladnosc: {final_output["accuracy"]}%')
