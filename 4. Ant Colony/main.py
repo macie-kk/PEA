@@ -61,7 +61,7 @@ def run_solve(cfg: dict, cfg_input: str, cfg_solution: int):
     # dokladnosc znalezionego rozwiazania na podstawie optymalnego + zaokraglony czas pracy
     final_output['accuracy'] = round(cfg_solution/final_output["solution"] * 100) if cfg_solution is not None else '---'
     final_output['time'] = round_seconds(final_output['time'] / repeats, cfg['Precision'])
-    final_output['avg_error'] = sum(errors)/len(errors) if cfg_solution is not None else '---'
+    final_output['avg_error'] = round(sum(errors)/len(errors), cfg['Precision']) if cfg_solution is not None else '---'
 
     print_results(final_output, cfg_solution)
     return final_output

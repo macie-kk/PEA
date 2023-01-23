@@ -36,7 +36,14 @@ def solve_tsp(matrix, config):
                 probabilities = [0]*m_size
                 for city in range(m_size):
                     if city not in ant_solution['cities']:
-                        visibility = 1 / matrix[last_city][city] if matrix[last_city][city] > 0 else 1
+                        current_next_distance = matrix[last_city][city]
+                        visibility = 1 / current_next_distance if current_next_distance != 0 else 1
+
+                        if config['Visibility'] == 'Home':
+                            next_home_distance = matrix[city][ant_solution['cities'][0]] / (m_size - len(ant_solution['cities']))
+                            visibility_sum = (current_next_distance + next_home_distance) / 2
+                            visibility = 1 / visibility_sum if visibility_sum != 0 else 1
+
                         probabilities[city] += (pheromones[last_city][city] ** alpha) * (visibility ** beta)
 
                 # normalizacja prawdopodobienstw
