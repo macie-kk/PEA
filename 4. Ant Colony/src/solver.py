@@ -39,7 +39,7 @@ def solve_tsp(matrix, config):
                         current_next_distance = matrix[last_city][city]
                         visibility = 1 / current_next_distance if current_next_distance != 0 else 1
 
-                        if config['Visibility'] == 'Home':
+                        if config['Heuristic'] == 'Home':
                             next_home_distance = matrix[city][ant_solution['cities'][0]] / (m_size - len(ant_solution['cities']))
                             visibility_sum = (current_next_distance + next_home_distance) / 2
                             visibility = 1 / visibility_sum if visibility_sum != 0 else 1

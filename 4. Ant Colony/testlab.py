@@ -36,20 +36,17 @@ def get_inputs():
         {
             'file': 'burma14.tsp',
             'solution': 3323,
-            'repeats': 5,
-            'Ants': 50
+            'repeats': 5
         },
         {
             'file': 'gr24.tsp',
             'solution': 1272,
             'repeats': 5,
-            'Ants': 50,
         },
         {
             'file': 'ftv44.atsp',
             'solution': 1613,
             'repeats': 5,
-            'Ants': 50,
         },
         {
             'file': 'ftv70.atsp',
